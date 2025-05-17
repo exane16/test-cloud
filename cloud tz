@@ -1,0 +1,49 @@
+import time
+from selenium import webdriver
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
+
+service = Service(ChromeDriverManager().install())
+driver = webdriver.Chrome(service=service)
+wait = WebDriverWait(driver, 30, poll_frequency=1)
+
+try:
+    # Открывает веб-страницу https://cloud.ru/
+    driver.get("https://cloud.ru/")
+
+    # Проверяет, что хэдер страницы содержит слово "Войти"
+    try:
+        element = wait.until(  # Используем явное ожидание
+            EC.presence_of_element_located((By.XPATH, '//span[@class="styles_label__hNP16" and text()="Войти"]'))
+        )
+        text = element.text
+        print(text)
+    except TimeoutException:
+        print("Элемент 'Войти' не найден на странице.")
+
+
+    # Находит элемент по CSS-селектору, содержащему текст "Войти" и кликает по нему
+    try:
+        element_1 = wait.until(  # Используем явное ожидание для кликабельности
+            EC.element_to_be_clickable((By.CSS_SELECTOR, ".styles_label__hNP16"))
+        )
+        element_1.click()
+        print("'Войти' кликнуто.")
+    except TimeoutException:
+        print("Элемент 'Войти' не найден.")
+
+        # Проверяет, что по клику произошло перенаправление на страницу с URL "https://id.cloud.ru/login?tab=ZWJlZDNkNjYtNDI1Zi00NmY5LThiZGItYzI5Mjk0NWNhZmJkJmU5NWExZGI1LWE2MWMtNDI1Yi1hZTYyLTI2ZDNhN2UyMjRmNw%3D%3D.b898f252ff7ee9f3da9acac8b6b6ff5c8cff86b31baa4f4884cad6da67e27cd5"
+    WebDriverWait(driver, 10, poll_frequency=1)
+    EC.url_to_be(
+        "https://id.cloud.ru/login?tab=N2UzOTEyMTUtNjk0Ny00NzZjLWJlYjEtZDM5N2IyYjg0MWQxJmU5NWExZGI1LWE2MWMtNDI1Yi1hZTYyLTI2ZDNhN2UyMjRmNw%3D%3D.0617b5d3cadd6ae159bfe6fc13623d3304e4d50efed9c9cfdfa60454c6bbe5ce")
+
+    # Дополнительная проверка
+    driver.current_url == "https://id.cloud.ru/login?tab=N2UzOTEyMTUtNjk0Ny00NzZjLWJlYjEtZDM5N2IyYjg0MWQxJmU5NWExZGI1LWE2MWMtNDI1Yi1hZTYyLTI2ZDNhN2UyMjRmNw%3D%3D.0617b5d3cadd6ae159bfe6fc13623d3304e4d50efed9c9cfdfa60454c6bbe5ce"
+    print("Тест пройден: перенаправление корректно")
+
+finally:
+    driver.quit()
