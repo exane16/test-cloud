@@ -7,3 +7,8 @@ browser.element('//*[@id="root"]/div/div/div/div[1]/div[1]/div/div').type("Ре�
 time.sleep(2)
 
 
+
+
+
+
+
